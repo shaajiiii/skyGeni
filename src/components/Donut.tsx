@@ -18,8 +18,10 @@ interface DonutChartProps {
 
 const DonutChart: React.FC<DonutChartProps> = ({
   data = [
-    { label: "__", value: 500, color: "#4A90E2" },
-    { label: "__", value: 500, color: "#F5A623" },
+    // { label: "__", value: 500, color: "#4A90E2" },
+    // { label: "__", value: 500, color: "#F5A623" },
+    { label: "heading", value: 500, color: "#4A90E2" },
+    { label: "asdfdsfsadf", value: 1000, color: "#F5A623" },
   ],
   width = 400,
   height = 400,

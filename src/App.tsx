@@ -1,14 +1,14 @@
 import "./App.css";
+import { useDashboardContext } from "./context/DashboardContext";
 import DashboardLayout from "./pages/Dashboard";
-
+import Home from "./pages/Home";
 
 function App() {
+  const { selectedCard } = useDashboardContext();
   return (
     <>
-      {/* <DonutChart />
-      <StackedBarChart />
-      <RevenueBreakdownTable data={sampleData} /> */}
-
+      {JSON.stringify(selectedCard)}   
+      <Home />
       <DashboardLayout />
     </>
   );
