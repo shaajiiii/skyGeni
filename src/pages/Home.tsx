@@ -5,11 +5,17 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import CardActionArea from "@mui/material/CardActionArea";
 import { Container, Paper } from "@mui/material";
-import { cards } from "../constants/dashboardCards";
+import { cards, type QueryKey } from "../constants/dashboardCards";
 import { useDashboardContext } from "../context/DashboardContext";
+import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
   const { setSelectedCard } = useDashboardContext();
+  const navigate = useNavigate();
+  const handleCardClick = (queryKey: QueryKey) => {
+    setSelectedCard(queryKey);
+    navigate("/dashboard");
+  };
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Paper
@@ -45,7 +51,7 @@ const Home: React.FC = () => {
           {cards.map((card) => (
             <Card key={card.title}>
               <CardActionArea
-                onClick={() => setSelectedCard(card.query_key)}
+                onClick={() => handleCardClick(card.query_key)}
                 // data-active={selectedCard === index ? "" : undefined}
                 sx={{
                   height: "100%",

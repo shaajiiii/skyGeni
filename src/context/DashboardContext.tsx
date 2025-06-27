@@ -4,7 +4,7 @@ import type { QueryKey } from "../constants/dashboardCards";
 
 interface DashboardContextType {
   selectedCard: QueryKey | null;
-  setSelectedCard: (value: QueryKey) => void;
+  setSelectedCard: (value: QueryKey | null) => void;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(

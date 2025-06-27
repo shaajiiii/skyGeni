@@ -4,6 +4,10 @@ import StackedBarChart from "../components/BarChart";
 import DonutChart from "../components/Donut";
 import RevenueBreakdownTable from "../components/RevenueTable";
 import { useContainerWidth } from "../hooks/useContainerWidth";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useDashboardContext } from "../context/DashboardContext";
+import { cards } from "../constants/dashboardCards";
 
 const sampleData = [
   {
@@ -50,6 +54,9 @@ const DashboardLayout: React.FC = () => {
   const { ref: barRef, width: barWidth } = useContainerWidth();
   const { ref: donutRef, width: donutWidth } = useContainerWidth();
   // console.log(barWidth, donutWidth);
+  const { selectedCard, setSelectedCard } = useDashboardContext();
+  const selectedCardObj = cards.find((card) => card.query_key === selectedCard);
+  const navigate = useNavigate();
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
@@ -58,7 +65,7 @@ const DashboardLayout: React.FC = () => {
         sx={{
           p: 4,
           borderRadius: 3,
-          overflow:"hidden",
+          overflow: "hidden",
           background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)",
           boxShadow:
             "0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 16px rgba(0, 0, 0, 0.08)",
@@ -71,6 +78,13 @@ const DashboardLayout: React.FC = () => {
           },
         }}
       >
+        <ArrowLeft
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            navigate("/");
+            setSelectedCard(null);
+          }}
+        />
         <Typography
           variant="h5"
           align="center"
@@ -81,7 +95,7 @@ const DashboardLayout: React.FC = () => {
             mb: 3,
           }}
         >
-          Won ACV mix by Cust Type
+          Won ACV mix by {selectedCardObj?.title || ""}
         </Typography>
 
         <Box

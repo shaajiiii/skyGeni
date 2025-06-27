@@ -1,3 +1,4 @@
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import { useDashboardContext } from "./context/DashboardContext";
 import DashboardLayout from "./pages/Dashboard";
@@ -7,9 +8,11 @@ function App() {
   const { selectedCard } = useDashboardContext();
   return (
     <>
-      {JSON.stringify(selectedCard)}   
-      <Home />
-      <DashboardLayout />
+      {JSON.stringify(selectedCard)}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<DashboardLayout />} />
+      </Routes>
     </>
   );
 }
