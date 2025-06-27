@@ -47,7 +47,10 @@ const data = [
   { quarter: "2024-Q4", existingCustomer: 700, newCustomer: 100 },
 ];
 const DashboardLayout: React.FC = () => {
-  const { ref, width } = useContainerWidth();
+  const { ref: barRef, width: barWidth } = useContainerWidth();
+  const { ref: donutRef, width: donutWidth } = useContainerWidth();
+  // console.log(barWidth, donutWidth);
+
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Paper
@@ -55,6 +58,7 @@ const DashboardLayout: React.FC = () => {
         sx={{
           p: 4,
           borderRadius: 3,
+          overflow:"hidden",
           background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)",
           boxShadow:
             "0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 16px rgba(0, 0, 0, 0.08)",
@@ -82,16 +86,18 @@ const DashboardLayout: React.FC = () => {
 
         <Box
           display="flex"
-          flexDirection={{ xs: "column", sm: "row" }}
+          flexDirection={{ xs: "column", lg: "row" }}
           justifyContent="space-between"
           gap={3}
           mt={3}
         >
-          <Box ref={ref} flex={2}>
-            <StackedBarChart width={width} data={data} />
+          <Box ref={barRef} flex={2}>
+            <StackedBarChart width={barWidth} data={data} />
           </Box>
 
-          <Box flex={1}>{/* <DonutChart /> */}</Box>
+          <Box ref={donutRef} flex={1}>
+            <DonutChart width={donutWidth} />
+          </Box>
         </Box>
 
         <Box mt={4}>
