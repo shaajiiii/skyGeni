@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Box, Typography, Paper } from "@mui/material";
 import StackedBarChart from "../components/BarChart";
 import DonutChart from "../components/Donut";
@@ -58,6 +58,15 @@ const DashboardLayout: React.FC = () => {
   const selectedCardObj = cards.find((card) => card.query_key === selectedCard);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!selectedCard) {
+      // No query type selected — go back home
+      navigate("/", { replace: true }); // replace prevents back loop
+    }
+  }, [selectedCard, navigate]);
+
+  if (!selectedCard) return null; // prevent rendering briefly during redirect
+
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Paper
@@ -82,41 +91,45 @@ const DashboardLayout: React.FC = () => {
           style={{ cursor: "pointer" }}
           onClick={() => {
             navigate("/");
-            setSelectedCard(null);
+            setTimeout(() => { // delaying state change to prevent a brief render
+              setSelectedCard(null);
+            }, 500);
           }}
         />
-        <Typography
-          variant="h5"
-          align="center"
-          gutterBottom
-          sx={{
-            fontWeight: 600,
-            color: "text.primary",
-            mb: 3,
-          }}
-        >
-          Won ACV mix by {selectedCardObj?.title || ""}
-        </Typography>
+        <>
+          <Typography
+            variant="h5"
+            align="center"
+            gutterBottom
+            sx={{
+              fontWeight: 600,
+              color: "text.primary",
+              mb: 3,
+            }}
+          >
+            Won ACV mix by {selectedCardObj?.title || ""}
+          </Typography>
 
-        <Box
-          display="flex"
-          flexDirection={{ xs: "column", lg: "row" }}
-          justifyContent="space-between"
-          gap={3}
-          mt={3}
-        >
-          <Box ref={barRef} flex={2}>
-            <StackedBarChart width={barWidth} data={data} />
+          <Box
+            display="flex"
+            flexDirection={{ xs: "column", lg: "row" }}
+            justifyContent="space-between"
+            gap={3}
+            mt={3}
+          >
+            <Box ref={barRef} flex={2}>
+              <StackedBarChart width={barWidth} data={data} />
+            </Box>
+
+            <Box ref={donutRef} flex={1}>
+              <DonutChart width={donutWidth} />
+            </Box>
           </Box>
 
-          <Box ref={donutRef} flex={1}>
-            <DonutChart width={donutWidth} />
+          <Box mt={4}>
+            <RevenueBreakdownTable data={sampleData} />
           </Box>
-        </Box>
-
-        <Box mt={4}>
-          <RevenueBreakdownTable data={sampleData} />
-        </Box>
+        </>
       </Paper>
     </Container>
   );
