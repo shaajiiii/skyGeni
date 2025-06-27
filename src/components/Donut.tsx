@@ -164,24 +164,13 @@ const DonutChart: React.FC<DonutChartProps> = ({
   }, [data, width, height, innerRadius, outerRadius]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        p: 4,
-        bgcolor: "grey.50",
-        minHeight: "100vh",
-      }}
-    >
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        <svg
-          ref={svgRef}
-          width={width}
-          height={height}
-          style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }}
-        />
-      </Paper>
+    <Box>
+      <svg
+        ref={svgRef}
+        width={width}
+        height={height}
+        style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }}
+      />
     </Box>
   );
 };

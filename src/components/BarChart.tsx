@@ -202,62 +202,52 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
   }, [data, width, height, margin]);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper
-        elevation={3}
+    <>
+      <Box
         sx={{
-          p: 3,
-          mb: 4,
-          borderRadius: 2,
-          backgroundColor: "#fff",
+          overflowX: "auto",
+          display: "flex",
+          justifyContent: "center",
         }}
       >
-        <Box
-          sx={{
-            overflowX: "auto",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <svg ref={svgRef} width={width} height={height} />
-        </Box>
+        <svg ref={svgRef} width={width} height={height} />
+      </Box>
 
-        <Stack
-          direction="row"
-          spacing={6}
-          justifyContent="center"
-          alignItems="center"
-          mb={4}
-        >
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Box
-              sx={{
-                width: 20,
-                height: 15,
-                bgcolor: "#4A90E2",
-                borderRadius: 1,
-              }}
-            />
-            <Typography variant="body1" color="text.secondary">
-              Existing Customer
-            </Typography>
-          </Stack>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Box
-              sx={{
-                width: 20,
-                height: 15,
-                bgcolor: "#F5A623",
-                borderRadius: 1,
-              }}
-            />
-            <Typography variant="body1" color="text.secondary">
-              New Customer
-            </Typography>
-          </Stack>
+      <Stack
+        direction="row"
+        spacing={6}
+        justifyContent="center"
+        alignItems="center"
+        mb={4}
+      >
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Box
+            sx={{
+              width: 20,
+              height: 15,
+              bgcolor: "#4A90E2",
+              borderRadius: 1,
+            }}
+          />
+          <Typography variant="body1" color="text.secondary">
+            Existing Customer
+          </Typography>
         </Stack>
-      </Paper>
-    </Container>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Box
+            sx={{
+              width: 20,
+              height: 15,
+              bgcolor: "#F5A623",
+              borderRadius: 1,
+            }}
+          />
+          <Typography variant="body1" color="text.secondary">
+            New Customer
+          </Typography>
+        </Stack>
+      </Stack>
+    </>
   );
 };
 
