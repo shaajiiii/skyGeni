@@ -1,19 +1,33 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
-import { useDashboardContext } from "./context/DashboardContext";
 import DashboardLayout from "./pages/Dashboard";
 import Home from "./pages/Home";
+import { AnimatePresence } from "framer-motion";
+import PageWrapper from "./components/PageWrapper";
 
 function App() {
-  const { selectedCard } = useDashboardContext();
+  const location = useLocation();
   return (
-    <>
-      {JSON.stringify(selectedCard)}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<DashboardLayout />} />
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route
+          path="/"
+          element={
+            <PageWrapper>
+              <Home />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PageWrapper>
+              <DashboardLayout />
+            </PageWrapper>
+          }
+        />
       </Routes>
-    </>
+    </AnimatePresence>
   );
 }
 
