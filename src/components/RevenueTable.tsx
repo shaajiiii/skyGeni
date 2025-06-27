@@ -147,7 +147,7 @@ const RevenueBreakdownTable: React.FC<Props> = ({ data }) => {
                   }}
                 >
                   <TableCell sx={{ fontWeight }}>{rowType}</TableCell>
-                  {data.map((d) => {
+                  {data.map((d, index) => {
                     const rowData =
                       rowType === "Existing Customer"
                         ? d.existingCustomer
@@ -156,7 +156,7 @@ const RevenueBreakdownTable: React.FC<Props> = ({ data }) => {
                         : d.total;
 
                     return (
-                      <React.Fragment key={rowType + rowIdx}>
+                      <React.Fragment key={index}>
                         <TableCell sx={{ fontWeight }} align="center">
                           {rowData.count}
                         </TableCell>

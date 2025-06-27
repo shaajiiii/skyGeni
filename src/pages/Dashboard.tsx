@@ -3,6 +3,7 @@ import { Container, Box, Typography, Paper } from "@mui/material";
 import StackedBarChart from "../components/BarChart";
 import DonutChart from "../components/Donut";
 import RevenueBreakdownTable from "../components/RevenueTable";
+import { useContainerWidth } from "../hooks/useContainerWidth";
 
 const sampleData = [
   {
@@ -37,7 +38,16 @@ const sampleData = [
   },
 ];
 
+const data = [
+  { quarter: "2023-Q3", existingCustomer: 1322, newCustomer: 983 },
+  { quarter: "2023-Q4", existingCustomer: 1125, newCustomer: 387 },
+  { quarter: "2024-Q1", existingCustomer: 1360, newCustomer: 313 },
+  { quarter: "2024-Q2", existingCustomer: 648, newCustomer: 219 },
+  { quarter: "2024-Q3", existingCustomer: 3000, newCustomer: 219 },
+  { quarter: "2024-Q4", existingCustomer: 700, newCustomer: 100 },
+];
 const DashboardLayout: React.FC = () => {
+  const { ref, width } = useContainerWidth();
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Paper
@@ -77,13 +87,11 @@ const DashboardLayout: React.FC = () => {
           gap={3}
           mt={3}
         >
-          <Box flex={2}>
-            <StackedBarChart />
+          <Box ref={ref} flex={2}>
+            <StackedBarChart width={width} data={data} />
           </Box>
 
-          <Box flex={1}>
-            <DonutChart />
-          </Box>
+          <Box flex={1}>{/* <DonutChart /> */}</Box>
         </Box>
 
         <Box mt={4}>
