@@ -101,10 +101,10 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
     barGroups.each(function (stackData) {
       const group = d3.select(this);
+
       group
         .selectAll("text.value-label")
-        // .data(stackData)
-        .data(stackData.filter((d) => d[1] - d[0] > 0)) // Filter text labels  where value is 0
+        .data(stackData.filter((d) => d[1] - d[0] > 0)) // Skip 0-value bars
         .enter()
         .append("text")
         .attr(
@@ -124,18 +124,22 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
           const percentage = Math.round((value / total) * 100);
           const barHeight = yScale(d[0]) - yScale(d[1]);
 
+          if (barHeight < 15) return; // ✅ Don't show text if bar is too short
+
           d3.select(this)
             .append("tspan")
             .attr("x", (xScale(d.data.quarter) || 0) + xScale.bandwidth() / 2)
             .attr("dy", 0)
             .style("font-size", `${barHeight < 40 ? 8 : 12}px`)
             .text(`$${value}K`);
-          if (barHeight < 40) return;
-          d3.select(this)
-            .append("tspan")
-            .attr("x", (xScale(d.data.quarter) || 0) + xScale.bandwidth() / 2)
-            .attr("dy", "1.2em")
-            .text(`(${percentage}%)`);
+
+          if (barHeight >= 40) {
+            d3.select(this)
+              .append("tspan")
+              .attr("x", (xScale(d.data.quarter) || 0) + xScale.bandwidth() / 2)
+              .attr("dy", "1.2em")
+              .text(`(${percentage}%)`);
+          }
         });
     });
 
