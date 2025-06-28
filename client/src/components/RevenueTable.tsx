@@ -116,13 +116,13 @@ const RevenueBreakdownTable: React.FC<Props> = ({ data, filterByType }) => {
                   const group = row.groups[label];
                   return (
                     <React.Fragment key={index}>
-                      <TableCell align="center" sx={{ fontWeight }}>
+                      <TableCell align="right" sx={{ fontWeight }}>
                         {group?.count ?? "-"}
                       </TableCell>
-                      <TableCell align="center" sx={{ fontWeight }}>
+                      <TableCell align="right" sx={{ fontWeight }}>
                         {group ? formatCurrency(group.acv) : "-"}
                       </TableCell>
-                      <TableCell align="center" sx={{ fontWeight }}>
+                      <TableCell align="right" sx={{ fontWeight }}>
                         {group?.percent ?? "-"}%
                       </TableCell>
                     </React.Fragment>
