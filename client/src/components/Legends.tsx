@@ -9,10 +9,10 @@ interface LegendsProps {
 const Legends: React.FC<LegendsProps> = ({ legends, spacing = 6 }) => {
   return (
     <Stack
-      direction="row"
-      spacing={spacing}
+      direction={{ xs: "column", lg: "row" }}
+      spacing={{ xs: 1, lg: spacing }}
       justifyContent="center"
-      alignItems="center"
+      alignItems="left"
       flexWrap="wrap"
       rowGap={2}
       mb={4}
