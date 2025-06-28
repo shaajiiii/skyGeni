@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Box, Typography, Paper } from "@mui/material";
 import StackedBarChart from "../components/BarChart";
 import DonutChart from "../components/Donut";
@@ -52,6 +52,7 @@ const data = [
   { quarter: "2024-Q4", existingCustomer: 700, newCustomer: 100 },
 ];
 const DashboardLayout: React.FC = () => {
+  const [donutData, setDonutData] = useState([]);
   const { ref: barRef, width: barWidth } = useContainerWidth();
   const { ref: donutRef, width: donutWidth } = useContainerWidth();
   // console.log(barWidth, donutWidth);
@@ -67,10 +68,14 @@ const DashboardLayout: React.FC = () => {
 
     fetchDashboardData(selectedCard)
       .then((res) => {
-        console.log(res);
+        if (res?.donutData) {
+          setDonutData(res.donutData);
+        }
+        // console.log(res);
+        // console.log(res.donutData);
       })
-      .catch((err) => console.error("Failed to fetch:", err))
-      // .finally(() => {});
+      .catch((err) => console.error("Failed to fetch:", err));
+    // .finally(() => {});
   }, [selectedCard, navigate]);
 
   if (!selectedCard) return null; // prevent rendering briefly during redirect
@@ -118,7 +123,7 @@ const DashboardLayout: React.FC = () => {
           >
             Won ACV mix by {selectedCardObj?.title || ""}
           </Typography>
-
+          <pre> {JSON.stringify(donutData, null, 2)}</pre>
           <Box
             display="flex"
             flexDirection={{ xs: "column", lg: "row" }}
@@ -131,7 +136,7 @@ const DashboardLayout: React.FC = () => {
             </Box>
 
             <Box ref={donutRef} flex={1}>
-              <DonutChart width={donutWidth} />
+              <DonutChart width={donutWidth} data={donutData}/>
             </Box>
           </Box>
 
