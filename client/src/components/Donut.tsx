@@ -14,6 +14,7 @@ interface DonutChartProps {
   height?: number;
   innerRadius?: number;
   outerRadius?: number;
+  showIndicatorsOnlyOnHover?: boolean; // 🔹 Added prop
 }
 
 const DonutChart: React.FC<DonutChartProps> = ({
@@ -25,82 +26,91 @@ const DonutChart: React.FC<DonutChartProps> = ({
   height = 400,
   innerRadius = 80,
   outerRadius = 140,
+  showIndicatorsOnlyOnHover = false,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     if (!svgRef.current) return;
 
-    // Clear previous chart
     d3.select(svgRef.current).selectAll("*").remove();
-
     const svg = d3.select(svgRef.current);
     const centerX = width / 2;
     const centerY = height / 2;
 
-    // Create the pie generator
     const pie = d3
       .pie<DataItem>()
       .value((d) => d.value)
       .sort(null);
 
-    // Create the arc generator
     const arc = d3
       .arc<d3.PieArcDatum<DataItem>>()
       .innerRadius(innerRadius)
       .outerRadius(outerRadius);
 
-    // Create the arc generator for labels (positioned outside)
     const labelArc = d3
       .arc<d3.PieArcDatum<DataItem>>()
       .innerRadius(outerRadius + 40)
       .outerRadius(outerRadius + 40);
 
-    // Create arc generator for line endpoints (mid-point between chart and labels)
     const lineArc = d3
       .arc<d3.PieArcDatum<DataItem>>()
       .innerRadius(outerRadius)
       .outerRadius(outerRadius);
 
-    // Create a group for the chart
     const chartGroup = svg
       .append("g")
       .attr("transform", `translate(${centerX}, ${centerY})`);
 
-    // Generate pie data
     const pieData = pie(data);
 
-    // Create the donut segments
-    const segments = chartGroup
-      .selectAll("path")
+    const segmentGroups = chartGroup
+      .selectAll("g.segment-group")
       .data(pieData)
       .enter()
+      .append("g")
+      .attr("class", "segment-group");
+
+    segmentGroups
       .append("path")
       .attr("d", arc)
       .attr("fill", (d) => d.data.color)
-      .attr("stroke", "#ffffff")
-      .attr("stroke-width", 2);
-
-    // Add hover effects
-    segments
-      .on("mouseover", function () {
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 2)
+      .on("mouseover", function (_, d) {
         d3.select(this)
           .transition()
           .duration(200)
           .attr("transform", "scale(1.05)");
+        if (showIndicatorsOnlyOnHover) {
+          d3.select(this.parentNode as SVGGElement)
+            .select(".hover-group")
+            .transition()
+            .duration(200)
+            .style("opacity", 1);
+        }
       })
       .on("mouseout", function () {
         d3.select(this)
           .transition()
           .duration(200)
           .attr("transform", "scale(1)");
+        if (showIndicatorsOnlyOnHover) {
+          d3.select(this.parentNode as SVGGElement)
+            .select(".hover-group")
+            .transition()
+            .duration(200)
+            .style("opacity", 0);
+        }
       });
 
-    // Add connector lines from chart to labels
-    chartGroup
-      .selectAll("polyline.connector")
-      .data(pieData)
-      .enter()
+    const hoverGroup = segmentGroups
+      .append("g")
+      .attr("class", "hover-group")
+      .style("opacity", showIndicatorsOnlyOnHover ? 0 : 1); // 🔹 Only show on hover unless overridden
+
+    // Connector lines
+    hoverGroup
       .append("polyline")
       .attr("class", "connector")
       .attr("points", (d) => {
@@ -114,11 +124,8 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .style("stroke-width", 1)
       .style("opacity", 0.7);
 
-    // Add labels
-    chartGroup
-      .selectAll("text.label")
-      .data(pieData)
-      .enter()
+    // Labels
+    hoverGroup
       .append("text")
       .attr("class", "label")
       .attr("transform", (d) => {
@@ -133,12 +140,9 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .style("fill", "#666")
       .text((d) => d.data.label);
 
-    // Add center text
-    let total = 0;
-    const isDefaultLabel = data.some((item) => item.label === "__");
-    if (!isDefaultLabel) {
-      total = data.reduce((sum, item) => sum + item.value, 0);
-    }
+    // Center text for total
+    const isDefault = data.some((d) => d.label === "__");
+    const total = isDefault ? 0 : data.reduce((sum, d) => sum + d.value, 0);
 
     const centerGroup = chartGroup.append("g");
 
@@ -161,7 +165,14 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .style("font-weight", "bold")
       .style("fill", "#333")
       .text(`$${(total / 1000).toFixed(0)}K`);
-  }, [data, width, height, innerRadius, outerRadius]);
+  }, [
+    data,
+    width,
+    height,
+    innerRadius,
+    outerRadius,
+    showIndicatorsOnlyOnHover,
+  ]);
 
   return (
     <Box>

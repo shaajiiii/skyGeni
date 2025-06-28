@@ -99,7 +99,11 @@ const DashboardLayout: React.FC = () => {
             </Box>
 
             <Box ref={donutRef} flex={1}>
-              <DonutChart width={donutWidth} data={donutData} />
+              <DonutChart
+                width={donutWidth}
+                data={donutData}
+                showIndicatorsOnlyOnHover={selectedCard === "industry"}
+              />
             </Box>
           </Box>
           <Box mt={1}>
