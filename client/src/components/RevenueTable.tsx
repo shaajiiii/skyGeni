@@ -9,7 +9,7 @@ import {
   Paper,
 } from "@mui/material";
 
-interface CustomerStats {
+interface GroupStats {
   count: number;
   acv: number;
   percent: number;
@@ -17,13 +17,14 @@ interface CustomerStats {
 
 interface QuarterRow {
   quarter: string;
-  existingCustomer: CustomerStats;
-  newCustomer: CustomerStats;
-  total: CustomerStats;
+  groups: {
+    [label: string]: GroupStats;
+  };
 }
 
 interface Props {
   data: QuarterRow[];
+  filterByType?: string;
 }
 
 const formatCurrency = (value: number) =>
@@ -33,12 +34,15 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   });
 
-const RevenueBreakdownTable: React.FC<Props> = ({ data }) => {
+const RevenueBreakdownTable: React.FC<Props> = ({ data, filterByType }) => {
+  if (!data || data.length === 0) return null;
+
+  const groupLabels = Object.keys(data[0].groups || {});
+
   return (
     <TableContainer component={Paper} elevation={3} sx={{ mt: 4 }}>
       <Table
         sx={{
-          //   width: 600,
           "& .MuiTableCell-root": {
             border: "1px solid #e0e0e0",
             whiteSpace: "nowrap",
@@ -49,20 +53,16 @@ const RevenueBreakdownTable: React.FC<Props> = ({ data }) => {
         <TableHead>
           <TableRow>
             <TableCell
-              rowSpan={1}
               align="center"
-              sx={{
-                fontWeight: "bold",
-                whiteSpace: "nowrap",
-              }}
+              sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
             >
-              Closed Fiscal Quarter
+              Closed Financial Quarter
             </TableCell>
             {data.map((d, idx) => {
               const isEven = idx % 2 === 0;
               const bgColor =
                 idx === data.length - 1
-                  ? "#1565c0" // darker blue for total column
+                  ? "#1565c0"
                   : isEven
                   ? "#1976d2"
                   : "#2196f3";
@@ -76,7 +76,6 @@ const RevenueBreakdownTable: React.FC<Props> = ({ data }) => {
                     backgroundColor: bgColor,
                     color: "#fff",
                     fontWeight: "bold",
-                    whiteSpace: "nowrap",
                   }}
                 >
                   {d.quarter}
@@ -84,48 +83,20 @@ const RevenueBreakdownTable: React.FC<Props> = ({ data }) => {
               );
             })}
           </TableRow>
-          <TableRow>
-            <TableCell
-              rowSpan={1}
-              align="center"
-              sx={{
-                fontWeight: "bold",
 
-                whiteSpace: "nowrap",
-              }}
-            >
-              Cust Type
+          <TableRow>
+            <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              {filterByType}
             </TableCell>
             {data.map((_, idx) => (
               <React.Fragment key={idx}>
-                <TableCell
-                  align="center"
-                  sx={{
-                    fontWeight: "bold",
-                    // color: "#fff",
-                    backgroundColor: "inherit",
-                  }}
-                >
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   # of Opps
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{
-                    fontWeight: "bold",
-                    // color: "#fff",
-                    backgroundColor: "inherit",
-                  }}
-                >
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   ACV
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{
-                    fontWeight: "bold",
-                    // color: "#fff",
-                    backgroundColor: "inherit",
-                  }}
-                >
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
                   % of Total
                 </TableCell>
               </React.Fragment>
@@ -134,45 +105,32 @@ const RevenueBreakdownTable: React.FC<Props> = ({ data }) => {
         </TableHead>
 
         <TableBody>
-          {["Existing Customer", "New Customer", "Total"].map(
-            (rowType, rowIdx) => {
-              const fontWeight = rowType === "Total" ? "bold" : 500;
+          {groupLabels.map((label) => {
+            const fontWeight = label === "Total" ? "bold" : 500;
+            const bgColor = label === "Total" ? "#f9f9f9" : undefined;
 
-              return (
-                <TableRow
-                  key={rowType}
-                  sx={{
-                    backgroundColor:
-                      rowType === "Total" ? "#f9f9f9" : undefined,
-                  }}
-                >
-                  <TableCell sx={{ fontWeight }}>{rowType}</TableCell>
-                  {data.map((d, index) => {
-                    const rowData =
-                      rowType === "Existing Customer"
-                        ? d.existingCustomer
-                        : rowType === "New Customer"
-                        ? d.newCustomer
-                        : d.total;
-
-                    return (
-                      <React.Fragment key={index}>
-                        <TableCell sx={{ fontWeight }} align="center">
-                          {rowData.count}
-                        </TableCell>
-                        <TableCell sx={{ fontWeight }} align="center">
-                          {formatCurrency(rowData.acv)}
-                        </TableCell>
-                        <TableCell sx={{ fontWeight }} align="center">
-                          {rowData.percent}%
-                        </TableCell>
-                      </React.Fragment>
-                    );
-                  })}
-                </TableRow>
-              );
-            }
-          )}
+            return (
+              <TableRow key={label} sx={{ backgroundColor: bgColor }}>
+                <TableCell sx={{ fontWeight }}>{label}</TableCell>
+                {data.map((row, index) => {
+                  const group = row.groups[label];
+                  return (
+                    <React.Fragment key={index}>
+                      <TableCell align="center" sx={{ fontWeight }}>
+                        {group?.count ?? "-"}
+                      </TableCell>
+                      <TableCell align="center" sx={{ fontWeight }}>
+                        {group ? formatCurrency(group.acv) : "-"}
+                      </TableCell>
+                      <TableCell align="center" sx={{ fontWeight }}>
+                        {group?.percent ?? "-"}%
+                      </TableCell>
+                    </React.Fragment>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>
