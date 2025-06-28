@@ -81,7 +81,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
     const bars = barGroups
       .selectAll("rect")
-      .data((d) => d)
+      .data((d) => d.filter((segment) => segment[1] - segment[0] > 0)) // Skip 0-value segments
       .enter()
       .append("rect")
       .attr("x", (d) => xScale(d.data.quarter)!)
@@ -103,7 +103,8 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
       const group = d3.select(this);
       group
         .selectAll("text.value-label")
-        .data(stackData)
+        // .data(stackData)
+        .data(stackData.filter((d) => d[1] - d[0] > 0)) // Filter text labels  where value is 0
         .enter()
         .append("text")
         .attr(
