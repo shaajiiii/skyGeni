@@ -91,12 +91,53 @@ export function getBarData(data, labelKey, queryKey) {
   });
 }
 
+export function getTableData(data, labelKey) {
+  const groupedByQuarter = _.groupBy(data, "closed_fiscal_quarter");
+
+  return Object.entries(groupedByQuarter).map(([quarter, items]) => {
+    const groupMap = _.groupBy(items, (item) => item[labelKey]);
+
+    const groups = {};
+
+    // Build data for each label (e.g., "Asia Pac", "Enterprise", etc.)
+    for (const [label, labelItems] of Object.entries(groupMap)) {
+      const count = _.sumBy(labelItems, (i) => Number(i.count) || 0);
+      const acv = _.sumBy(labelItems, (i) => Number(i.acv) || 0);
+
+      groups[label] = { count, acv };
+    }
+
+    // Calculate total
+    const totalCount = _.sumBy(Object.values(groups), (g) => g.count);
+    const totalAcv = _.sumBy(Object.values(groups), (g) => g.acv);
+
+    // Add percentages
+    for (const [label, g] of Object.entries(groups)) {
+      groups[label].percent = totalAcv
+        ? Math.round((g.acv / totalAcv) * 100)
+        : 0;
+    }
+
+    // Add total row
+    groups["Total"] = {
+      count: totalCount,
+      acv: totalAcv,
+      percent: 100,
+    };
+
+    return {
+      quarter,
+      groups,
+    };
+  });
+}
+
 export default function normalizeData(queryKey, data, labelKey) {
   return {
     donutData: getDonutData(data, labelKey, queryKey),
     barData: getBarData(data, labelKey, queryKey),
-    // rawTableData: data,
-    // pass the color obj for legends
+    // tableData: ,
+    tableData: getTableData(data, labelKey),
     legends: getLegends(queryKey),
   };
 }

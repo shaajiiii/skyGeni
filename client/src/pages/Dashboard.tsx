@@ -11,63 +11,10 @@ import { cards } from "../constants/dashboardCards";
 import { fetchDashboardData } from "../api/dashboard";
 import Legends from "../components/Legends";
 
-// const sampleData = [
-//   {
-//     quarter: "2023-Q3",
-//     existingCustomer: { count: 46, acv: 1322310, percent: 57 },
-//     newCustomer: { count: 14, acv: 983031, percent: 43 },
-//     total: { count: 60, acv: 2305341, percent: 100 },
-//   },
-//   {
-//     quarter: "2023-Q4",
-//     existingCustomer: { count: 45, acv: 1124857, percent: 74 },
-//     newCustomer: { count: 10, acv: 387300, percent: 26 },
-//     total: { count: 55, acv: 1512157, percent: 100 },
-//   },
-//   {
-//     quarter: "2024-Q1",
-//     existingCustomer: { count: 51, acv: 1360047, percent: 81 },
-//     newCustomer: { count: 6, acv: 313189, percent: 19 },
-//     total: { count: 57, acv: 1673236, percent: 100 },
-//   },
-//   {
-//     quarter: "2024-Q2",
-//     existingCustomer: { count: 23, acv: 647821, percent: 74 },
-//     newCustomer: { count: 6, acv: 224643, percent: 26 },
-//     total: { count: 29, acv: 872465, percent: 100 },
-//   },
-//   {
-//     quarter: "Total",
-//     existingCustomer: { count: 165, acv: 4455036, percent: 70 },
-//     newCustomer: { count: 36, acv: 1908164, percent: 30 },
-//     total: { count: 201, acv: 6363200, percent: 100 },
-//   },
-// ];
-
-const sampleData = [
-  {
-    quarter: "2023-Q3",
-    groups: {
-      "Asia Pac": { count: 5, acv: 238547.19, percent: 10 },
-      Enterprise: { count: 2, acv: 165000, percent: 7 },
-      Europe: { count: 38, acv: 778384.35, percent: 33 },
-      Total: { count: 45, acv: 1181931.54, percent: 100 },
-    },
-  },
-  {
-    quarter: "2023-Q4",
-    groups: {
-      "Asia Pac": { count: 13, acv: 349600, percent: 25 },
-      Enterprise: { count: 3, acv: 192000, percent: 14 },
-      Europe: { count: 31, acv: 736276.98, percent: 52 },
-      Total: { count: 47, acv: 1277876.98, percent: 100 },
-    },
-  },
-];
-
 const DashboardLayout: React.FC = () => {
   const [donutData, setDonutData] = useState([]);
   const [barchartData, setBarchartData] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [legends, setLegends] = useState({});
   const { ref: barRef, width: barWidth } = useContainerWidth();
   const { ref: donutRef, width: donutWidth } = useContainerWidth();
@@ -88,6 +35,7 @@ const DashboardLayout: React.FC = () => {
           setDonutData(res.donutData);
           setLegends(res.legends);
           setBarchartData(res.barData);
+          setTableData(res.tableData);
         }
         // console.log(res);
         // console.log(res.donutData);
@@ -163,7 +111,7 @@ const DashboardLayout: React.FC = () => {
 
           <Box mt={4}>
             <RevenueBreakdownTable
-              data={sampleData}
+              data={tableData}
               filterByType={selectedCardObj?.title}
             />
           </Box>
