@@ -43,7 +43,7 @@ export function getDonutData(data, labelKey, queryKey) {
 export default function normalizeData(queryKey, data, labelKey) {
   return {
     donutData: getDonutData(data, labelKey, queryKey),
-    barData: getBarData(data, labelKey),
+    // barData: getBarData(data, labelKey),
     // rawTableData: data, 
   };
 }

@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../context/DashboardContext";
 import { cards } from "../constants/dashboardCards";
+import { fetchDashboardData } from "../api/dashboard";
 
 const sampleData = [
   {
@@ -63,6 +64,13 @@ const DashboardLayout: React.FC = () => {
       // No query type selected — go back home
       navigate("/", { replace: true }); // replace prevents back loop
     }
+
+    fetchDashboardData(selectedCard)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.error("Failed to fetch:", err))
+      // .finally(() => {});
   }, [selectedCard, navigate]);
 
   if (!selectedCard) return null; // prevent rendering briefly during redirect
@@ -91,7 +99,8 @@ const DashboardLayout: React.FC = () => {
           style={{ cursor: "pointer" }}
           onClick={() => {
             navigate("/");
-            setTimeout(() => { // delaying state change to prevent a brief render
+            setTimeout(() => {
+              // delaying state change to prevent a brief render
               setSelectedCard(null);
             }, 500);
           }}
