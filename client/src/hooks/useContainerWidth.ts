@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
+// using this to resize the charts, helps to get parent container's width
 export const useContainerWidth = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);

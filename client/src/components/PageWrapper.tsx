@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
+// made this component to add an animation effect to the application
 const PageWrapper = ({ children }: { children: ReactNode }) => (
   <motion.div
     initial={{ opacity: 0 }}

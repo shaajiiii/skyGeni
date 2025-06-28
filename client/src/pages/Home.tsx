@@ -52,7 +52,6 @@ const Home: React.FC = () => {
             <Card key={card.title}>
               <CardActionArea
                 onClick={() => handleCardClick(card.query_key)}
-                // data-active={selectedCard === index ? "" : undefined}
                 sx={{
                   height: "100%",
                   "&[data-active]": {

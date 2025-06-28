@@ -1,5 +1,6 @@
 export type QueryKey = "industry" | "customer_type" | "team" | "acv_range";
 
+// displayed cards in initial route are hardcoded here. In a real project we fetch it from a master table
 export const cards: {
   id: number;
   title: string;

@@ -18,7 +18,6 @@ const DashboardLayout: React.FC = () => {
   const [legends, setLegends] = useState({});
   const { ref: barRef, width: barWidth } = useContainerWidth();
   const { ref: donutRef, width: donutWidth } = useContainerWidth();
-  // console.log(barWidth, donutWidth);
   const { selectedCard, setSelectedCard } = useDashboardContext();
   const selectedCardObj = cards.find((card) => card.query_key === selectedCard);
   const navigate = useNavigate();
@@ -37,8 +36,6 @@ const DashboardLayout: React.FC = () => {
           setBarchartData(res.barData);
           setTableData(res.tableData);
         }
-        // console.log(res);
-        // console.log(res.donutData);
       })
       .catch((err) => console.error("Failed to fetch:", err));
     // .finally(() => {});
@@ -89,7 +86,7 @@ const DashboardLayout: React.FC = () => {
           >
             Won ACV mix by {selectedCardObj?.title || ""}
           </Typography>
-          {/* <pre> {JSON.stringify(donutData, null, 2)}</pre> */}
+
           <Box
             display="flex"
             flexDirection={{ xs: "column", lg: "row" }}

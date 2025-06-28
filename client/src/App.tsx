@@ -1,5 +1,4 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import "./App.css";
 import DashboardLayout from "./pages/Dashboard";
 import Home from "./pages/Home";
 import { AnimatePresence } from "framer-motion";
