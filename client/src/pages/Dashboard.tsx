@@ -64,8 +64,7 @@ const DashboardLayout: React.FC = () => {
         }}
       >
         <ArrowLeft
-          style={{ cursor: "pointer", marginBottom:"1rem"}}
-          
+          style={{ cursor: "pointer", marginBottom: "1rem" }}
           onClick={() => {
             navigate("/");
             setTimeout(() => {
