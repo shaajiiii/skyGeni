@@ -66,26 +66,35 @@ export function getDonutData(data, labelKey, queryKey) {
   });
 }
 
-// export function getBarData(data, labelKey) {
-//   const groupedByQuarter = _.groupBy(data, "closed_fiscal_quarter");
+export function getBarData(data, labelKey, queryKey) {
+  const colorMap = getLegends(queryKey) || {};
+  const groupedByQuarter = _.groupBy(data, "closed_fiscal_quarter");
 
-//   return Object.entries(groupedByQuarter).map(([quarter, items]) => {
-//     const acc = { quarter };
+  return Object.entries(groupedByQuarter).map(([quarter, items]) => {
+    const valueObj = {};
 
-//     items.forEach((item) => {
-//       const label = item[labelKey];
-//       const acv = Number(item.acv || 0);
-//       acc[label] = (acc[label] || 0) + Math.round(acv / 1000);
-//     });
+    items.forEach((item) => {
+      const label = item[labelKey];
+      const acv = Math.round(Number(item.acv || 0) / 1000); // to K
 
-//     return acc;
-//   });
-// }
+      if (!valueObj[label]) {
+        valueObj[label] = { value: 0, color: colorMap[label] || "#ccc" };
+      }
+
+      valueObj[label].value += acv;
+    });
+
+    return {
+      quarter,
+      values: valueObj,
+    };
+  });
+}
 
 export default function normalizeData(queryKey, data, labelKey) {
   return {
     donutData: getDonutData(data, labelKey, queryKey),
-    // barData: getBarData(data, labelKey),
+    barData: getBarData(data, labelKey, queryKey),
     // rawTableData: data,
     // pass the color obj for legends
     legends: getLegends(queryKey),

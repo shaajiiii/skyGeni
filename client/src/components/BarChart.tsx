@@ -1,40 +1,38 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { Box, Paper, Typography, Stack, Container } from "@mui/material";
+import { Box } from "@mui/material";
 
-interface QuarterData {
+interface SeriesEntry {
+  value: number;
+  color: string;
+}
+
+interface BarDatum {
   quarter: string;
-  existingCustomer: number;
-  newCustomer: number;
+  values: Record<string, SeriesEntry>;
 }
 
 interface StackedBarChartProps {
-  data?: QuarterData[];
+  data: BarDatum[];
   width?: number;
   height?: number;
   margin?: { top: number; right: number; bottom: number; left: number };
 }
 
 const StackedBarChart: React.FC<StackedBarChartProps> = ({
-  data = [
-    { quarter: "2023-Q3", existingCustomer: 1322, newCustomer: 983 },
-    { quarter: "2023-Q4", existingCustomer: 1125, newCustomer: 387 },
-    { quarter: "2024-Q1", existingCustomer: 1360, newCustomer: 313 },
-    { quarter: "2024-Q2", existingCustomer: 648, newCustomer: 219 },
-    { quarter: "2024-Q3", existingCustomer: 3000, newCustomer: 219 },
-    { quarter: "2024-Q4", existingCustomer: 700, newCustomer: 100 },
-  ],
+  data,
   width = 800,
   height = 500,
   margin = { top: 60, right: 40, bottom: 80, left: 80 },
 }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
-    if (!svgRef.current) return;
-    d3.select(svgRef.current).selectAll("*").remove();
+    if (!svgRef.current || data.length === 0) return;
 
     const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
+
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
@@ -42,9 +40,18 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    const keys = ["existingCustomer", "newCustomer"];
-    const stackGenerator = d3.stack<QuarterData>().keys(keys);
-    const stackedData = stackGenerator(data);
+    const keys = Object.keys(data[0].values);
+
+    const flatData = data.map((d) => {
+      const obj: Record<string, any> = { quarter: d.quarter };
+      keys.forEach((key) => {
+        obj[key] = d.values[key]?.value || 0;
+      });
+      return obj;
+    });
+
+    const stackGenerator = d3.stack<Record<string, any>>().keys(keys);
+    const stackedData = stackGenerator(flatData);
 
     const xScale = d3
       .scaleBand()
@@ -52,36 +59,36 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
       .range([0, chartWidth])
       .padding(0.3);
 
-    const maxTotal =
-      d3.max(data, (d) => d.existingCustomer + d.newCustomer) || 0;
+    const maxY =
+      d3.max(flatData, (d) => keys.reduce((sum, k) => sum + d[k], 0)) || 0;
+
     const yScale = d3
       .scaleLinear()
-      .domain([0, maxTotal * 1.1])
+      .domain([0, maxY * 1.1])
       .range([chartHeight, 0]);
 
-    const colorScale = d3
-      .scaleOrdinal()
-      .domain(keys)
-      .range(["#4A90E2", "#F5A623"]);
+    const colorMap: Record<string, string> = {};
+    keys.forEach((key) => {
+      colorMap[key] = data[0].values[key]?.color || "#ccc";
+    });
 
     const barGroups = chartGroup
       .selectAll("g.bar-group")
       .data(stackedData)
       .enter()
       .append("g")
-      .attr("class", "bar-group")
-      .attr("fill", (d) => colorScale(d.key) as string);
+      .attr("fill", (d) => colorMap[d.key] || "#ccc");
 
     const bars = barGroups
       .selectAll("rect")
       .data((d) => d)
       .enter()
       .append("rect")
-      .attr("x", (d) => xScale(d.data.quarter) || 0)
+      .attr("x", (d) => xScale(d.data.quarter)!)
       .attr("y", (d) => yScale(d[1]))
       .attr("width", xScale.bandwidth())
       .attr("height", (d) => yScale(d[0]) - yScale(d[1]))
-      .attr("stroke", "#ffffff")
+      .attr("stroke", "#fff")
       .attr("stroke-width", 1);
 
     bars
@@ -99,35 +106,30 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
         .data(stackData)
         .enter()
         .append("text")
-        .attr("class", "value-label")
         .attr(
           "x",
           (d) => (xScale(d.data.quarter) || 0) + xScale.bandwidth() / 2
         )
         .attr("y", (d) => {
           const barHeight = yScale(d[0]) - yScale(d[1]);
-          const centerY = yScale(d[1]) + barHeight / 2;
-          return centerY + 5;
+          return yScale(d[1]) + barHeight / 2 + 5;
         })
         .attr("text-anchor", "middle")
-        .style("font-family", "Arial, sans-serif")
-        .style("font-size", "12px")
-        .style("font-weight", "600")
-        .style("fill", "#ffffff")
-
+        .style("fill", "#fff")
+        .style("font-size", "11px")
         .each(function (d) {
           const value = d[1] - d[0];
+          const total = keys.reduce((sum, k) => sum + d.data[k], 0);
+          const percentage = Math.round((value / total) * 100);
           const barHeight = yScale(d[0]) - yScale(d[1]);
-          const percentage = Math.round(
-            (value / (d.data.existingCustomer + d.data.newCustomer)) * 100
-          );
+
           d3.select(this)
             .append("tspan")
             .attr("x", (xScale(d.data.quarter) || 0) + xScale.bandwidth() / 2)
             .attr("dy", 0)
             .style("font-size", `${barHeight < 40 ? 8 : 12}px`)
             .text(`$${value}K`);
-          if (barHeight < 40) return; // Don't draw label if too small
+          if (barHeight < 40) return;
           d3.select(this)
             .append("tspan")
             .attr("x", (xScale(d.data.quarter) || 0) + xScale.bandwidth() / 2)
@@ -136,14 +138,13 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
         });
     });
 
-    data.forEach((d) => {
-      const total = d.existingCustomer + d.newCustomer;
+    flatData.forEach((d) => {
+      const total = keys.reduce((sum, k) => sum + d[k], 0);
       chartGroup
         .append("text")
         .attr("x", (xScale(d.quarter) || 0) + xScale.bandwidth() / 2)
         .attr("y", yScale(total) - 10)
         .attr("text-anchor", "middle")
-        .style("font-family", "Arial, sans-serif")
         .style("font-size", "14px")
         .style("font-weight", "bold")
         .style("fill", "#333")
@@ -153,14 +154,20 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3
       .axisLeft(yScale)
-      .tickFormat((d) => `$${(d as number) / 1000}K`)
+      .tickFormat((d) => `$${d as number}K`)
       .ticks(6);
 
     chartGroup
       .append("g")
-      .attr("class", "x-axis")
       .attr("transform", `translate(0, ${chartHeight})`)
       .call(xAxis)
+      .selectAll("text")
+      .style("font-size", "12px")
+      .style("fill", "#666");
+
+    chartGroup
+      .append("g")
+      .call(yAxis)
       .selectAll("text")
       .style("font-size", "12px")
       .style("fill", "#666");
@@ -170,7 +177,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
       .data(yScale.ticks(6))
       .enter()
       .append("line")
-      .attr("class", "grid-line")
       .attr("x1", 0)
       .attr("x2", chartWidth)
       .attr("y1", (d) => yScale(d))
@@ -179,16 +185,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
       .style("stroke", "#e0e0e0")
       .style("stroke-dasharray", "2,2")
       .style("opacity", 0.7);
-
-    chartGroup
-      .append("g")
-      .attr("class", "y-axis")
-      .call(yAxis)
-      .selectAll("text")
-      .style("font-size", "12px")
-      .style("fill", "#666");
-
-    chartGroup.selectAll(".domain, .tick line").style("stroke", "#ddd");
 
     chartGroup
       .append("text")

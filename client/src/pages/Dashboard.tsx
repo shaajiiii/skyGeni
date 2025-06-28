@@ -44,16 +44,9 @@ const sampleData = [
   },
 ];
 
-const data = [
-  { quarter: "2023-Q3", existingCustomer: 1322, newCustomer: 983 },
-  { quarter: "2023-Q4", existingCustomer: 1125, newCustomer: 387 },
-  { quarter: "2024-Q1", existingCustomer: 1360, newCustomer: 313 },
-  { quarter: "2024-Q2", existingCustomer: 648, newCustomer: 219 },
-  { quarter: "2024-Q3", existingCustomer: 3000, newCustomer: 219 },
-  { quarter: "2024-Q4", existingCustomer: 700, newCustomer: 100 },
-];
 const DashboardLayout: React.FC = () => {
   const [donutData, setDonutData] = useState([]);
+  const [barchartData, setBarchartData] = useState([]);
   const [legends, setLegends] = useState({});
   const { ref: barRef, width: barWidth } = useContainerWidth();
   const { ref: donutRef, width: donutWidth } = useContainerWidth();
@@ -73,6 +66,7 @@ const DashboardLayout: React.FC = () => {
         if (res?.donutData) {
           setDonutData(res.donutData);
           setLegends(res.legends);
+          setBarchartData(res.barData);
         }
         // console.log(res);
         // console.log(res.donutData);
@@ -135,7 +129,7 @@ const DashboardLayout: React.FC = () => {
             mt={3}
           >
             <Box ref={barRef} flex={2}>
-              <StackedBarChart width={barWidth} data={data} />
+              <StackedBarChart width={barWidth} data={barchartData} />
             </Box>
 
             <Box ref={donutRef} flex={1}>
