@@ -44,11 +44,11 @@ const DashboardLayout: React.FC = () => {
   if (!selectedCard) return null; // prevent rendering briefly during redirect
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 4, p: { xs: 0, sm: 3 } }}>
       <Paper
         elevation={8}
         sx={{
-          p: 4,
+          p: { xs: 1, sm: 4 },
           borderRadius: 3,
           overflow: "hidden",
           background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)",
@@ -64,7 +64,8 @@ const DashboardLayout: React.FC = () => {
         }}
       >
         <ArrowLeft
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", marginBottom:"1rem"}}
+          
           onClick={() => {
             navigate("/");
             setTimeout(() => {
