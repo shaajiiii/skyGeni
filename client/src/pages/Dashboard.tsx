@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useDashboardContext } from "../context/DashboardContext";
 import { cards } from "../constants/dashboardCards";
 import { fetchDashboardData } from "../api/dashboard";
+import Legends from "../components/Legends";
 
 const sampleData = [
   {
@@ -53,6 +54,7 @@ const data = [
 ];
 const DashboardLayout: React.FC = () => {
   const [donutData, setDonutData] = useState([]);
+  const [legends, setLegends] = useState({});
   const { ref: barRef, width: barWidth } = useContainerWidth();
   const { ref: donutRef, width: donutWidth } = useContainerWidth();
   // console.log(barWidth, donutWidth);
@@ -70,6 +72,7 @@ const DashboardLayout: React.FC = () => {
       .then((res) => {
         if (res?.donutData) {
           setDonutData(res.donutData);
+          setLegends(res.legends);
         }
         // console.log(res);
         // console.log(res.donutData);
@@ -123,7 +126,7 @@ const DashboardLayout: React.FC = () => {
           >
             Won ACV mix by {selectedCardObj?.title || ""}
           </Typography>
-          <pre> {JSON.stringify(donutData, null, 2)}</pre>
+          {/* <pre> {JSON.stringify(donutData, null, 2)}</pre> */}
           <Box
             display="flex"
             flexDirection={{ xs: "column", lg: "row" }}
@@ -136,8 +139,11 @@ const DashboardLayout: React.FC = () => {
             </Box>
 
             <Box ref={donutRef} flex={1}>
-              <DonutChart width={donutWidth} data={donutData}/>
+              <DonutChart width={donutWidth} data={donutData} />
             </Box>
+          </Box>
+          <Box mt={1}>
+            <Legends legends={legends} />
           </Box>
 
           <Box mt={4}>

@@ -41,6 +41,13 @@ function getColor(label, queryKey) {
   return "#4A90E2"; // default
 }
 
+function getLegends(queryKey) {
+  if (queryKey === "customer_type") return CUSTOMER_TYPE_COLORS;
+  if (queryKey === "industry") return INDUSTRY_COLORS;
+  if (queryKey === "team") return TEAM_COLORS;
+  if (queryKey === "acv_range") return ACV_RANGE_COLORS;
+}
+
 export function getDonutData(data, labelKey, queryKey) {
   const grouped = _.groupBy(data, labelKey);
 
@@ -58,7 +65,6 @@ export function getDonutData(data, labelKey, queryKey) {
     };
   });
 }
-
 
 // export function getBarData(data, labelKey) {
 //   const groupedByQuarter = _.groupBy(data, "closed_fiscal_quarter");
@@ -81,6 +87,7 @@ export default function normalizeData(queryKey, data, labelKey) {
     donutData: getDonutData(data, labelKey, queryKey),
     // barData: getBarData(data, labelKey),
     // rawTableData: data,
-    // pass the color obj for legends 
+    // pass the color obj for legends
+    legends: getLegends(queryKey),
   };
 }
